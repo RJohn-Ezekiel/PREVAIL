@@ -1,0 +1,8 @@
+[
+  {"timestamp_offset": 0, "event_type": "login", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.10", "login_success": true, "failed_login_count": 0, "privilege_level": "user", "bytes_sent": 1200, "bytes_received": 3400, "event_label": "login", "risk_contribution": 0},
+  {"timestamp_offset": 60, "event_type": "host_discovery", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.0/24", "protocol": "icmp", "event_label": "host_discovery", "risk_contribution": 15},
+  {"timestamp_offset": 120, "event_type": "port_scan", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.20", "destination_port": 22, "protocol": "tcp", "event_label": "port_scan_ssh", "risk_contribution": 18},
+  {"timestamp_offset": 180, "event_type": "port_scan", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.20", "destination_port": 80, "protocol": "tcp", "event_label": "port_scan_http", "risk_contribution": 18},
+  {"timestamp_offset": 240, "event_type": "port_scan", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.20", "destination_port": 443, "protocol": "tcp", "event_label": "port_scan_https", "risk_contribution": 18},
+  {"timestamp_offset": 300, "event_type": "port_scan", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.30", "destination_port": 3306, "protocol": "tcp", "event_label": "port_scan_db", "risk_contribution": 20}
+]

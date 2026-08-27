@@ -1,0 +1,7 @@
+[
+  {"timestamp_offset": 0, "event_type": "login", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.10", "login_success": true, "failed_login_count": 0, "privilege_level": "user", "bytes_sent": 1200, "bytes_received": 3400, "event_label": "login", "risk_contribution": 0},
+  {"timestamp_offset": 120, "event_type": "data_transfer", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "203.0.113.50", "bytes_sent": 1024000, "bytes_received": 0, "event_label": "small_upload", "risk_contribution": 12},
+  {"timestamp_offset": 240, "event_type": "data_transfer", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "203.0.113.50", "bytes_sent": 5242880, "bytes_received": 0, "event_label": "large_upload", "risk_contribution": 20},
+  {"timestamp_offset": 360, "event_type": "data_transfer", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "203.0.113.50", "bytes_sent": 20971520, "bytes_received": 0, "event_label": "massive_upload", "risk_contribution": 30},
+  {"timestamp_offset": 480, "event_type": "data_transfer", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "203.0.113.50", "bytes_sent": 52428800, "bytes_received": 1024, "event_label": "exfiltration_upload", "risk_contribution": 35}
+]

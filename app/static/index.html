@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PREVAIL - AI19</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">P</div>
+                <div>
+                    <h1>PREVAIL</h1>
+                    <span class="subtitle">Predictive Early-warning & Vulnerability Intelligence Layer</span>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <button class="tab-btn active" data-tab="dashboard" onclick="showTab('dashboard')">DASHBOARD</button>
+                <button class="tab-btn" data-tab="inspector" onclick="showTab('inspector')">INSPECTOR</button>
+                <button class="tab-btn" data-tab="admin" onclick="showTab('admin')">ADMIN</button>
+            </nav>
+            <div class="header-status">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- DASHBOARD -->
+            <div class="tab-content" id="tabdashboard">
+                <div class="grid">
+                    <div class="card card-risk" id="riskCard">
+                        <div class="card-header">THREAT RISK</div>
+                        <div class="risk-gauge">
+                            <div class="risk-number" id="riskScore">8</div>
+                            <div class="risk-label" id="riskLevel">LOW</div>
+                        </div>
+                        <div class="risk-bar-container">
+                            <div class="risk-bar" id="riskBar" style="width: 8%"></div>
+                        </div>
+                        <div class="risk-scale"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">ATTACK PROBABILITY</div>
+                        <div class="big-value" id="attackProb">0%</div>
+                        <div class="sub-label">Within 30min prediction window</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">ANOMALY SCORE</div>
+                        <div class="big-value" id="anomalyScore">0</div>
+                        <div class="sub-label">Behavioral deviation from baseline</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">TEMPORAL PATTERN</div>
+                        <div class="big-value" id="temporalScore">0</div>
+                        <div class="sub-label">Multi-stage attack correlation</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Scenario</label>
+                        <select id="scenarioSelect">
+                            <option value="multi_stage_attack">Multi-Stage Attack</option>
+                            <option value="brute_force_only">Brute Force</option>
+                            <option value="recon_then_privilege">Recon to Privilege Escalation</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-start" id="startBtn" onclick="startSimulation()">START ATTACK SIMULATION</button>
+                    <button class="btn btn-stop" id="stopBtn" onclick="stopSimulation()" style="display:none">STOP</button>
+                    <div class="speed-control">
+                        <label>Speed</label>
+                        <input type="range" id="speedSlider" min="0.5" max="3" step="0.5" value="1">
+                        <span id="speedLabel">1x</span>
+                    </div>
+                </div>
+
+                <div class="card card-full" id="stageCard" style="display:none">
+                    <div class="card-header">ATTACK PROGRESSION</div>
+                    <div class="stage-progress" id="stageProgress"></div>
+                    <div class="current-stage">
+                        <span class="stage-label">Current Stage:</span>
+                        <span class="stage-value" id="currentStage">Initializing...</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header">RISK COMPONENTS</div>
+                        <div class="breakdown">
+                            <div class="breakdown-item"><span class="breakdown-label">Behavioral Anomaly</span><div class="breakdown-bar-container"><div class="breakdown-bar" id="barAnomaly" style="width:0%"></div></div><span class="breakdown-value" id="valAnomaly">0%</span></div>
+                            <div class="breakdown-item"><span class="breakdown-label">Attack Probability</span><div class="breakdown-bar-container"><div class="breakdown-bar bar-prob" id="barProb" style="width:0%"></div></div><span class="breakdown-value" id="valProb">0%</span></div>
+                            <div class="breakdown-item"><span class="breakdown-label">Temporal Pattern</span><div class="breakdown-bar-container"><div class="breakdown-bar bar-temporal" id="barTemporal" style="width:0%"></div></div><span class="breakdown-value" id="valTemporal">0%</span></div>
+                            <div class="breakdown-item"><span class="breakdown-label">Behavioral Signals</span><div class="breakdown-bar-container"><div class="breakdown-bar bar-behavior" id="barBehavior" style="width:0%"></div></div><span class="breakdown-value" id="valBehavior">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">KEY SIGNALS</div>
+                        <div class="signals" id="keySignals">
+                            <div class="signal-item signal-info">System operational -- monitoring active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-full">
+                    <div class="card-header">RISK TIMELINE <span class="header-hint">hover points for details</span></div>
+                    <div class="timeline-container">
+                        <canvas id="timelineCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="card card-full" id="explanationCard" style="display:none">
+                    <div class="card-header">ANALYSIS SUMMARY</div>
+                    <div class="explanation" id="explanationText"></div>
+                    <div class="recommendation" id="recommendationText"></div>
+                </div>
+
+                <div class="card card-full">
+                    <div class="card-header">RECENT EVENTS</div>
+                    <div class="events-table-container">
+                        <table class="events-table">
+                            <thead><tr><th>Time</th><th>Event Type</th><th>User</th><th>Source IP</th><th>Destination</th><th>Details</th></tr></thead>
+                            <tbody id="eventsBody"><tr><td colspan="6" class="no-data">No events yet</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INSPECTOR -->
+            <div class="tab-content" id="tabinspector" style="display:none">
+                <div class="inspector-toolbar">
+                    <input type="text" id="inspectorFilter" class="filter-input" placeholder="Filter: event_type:port_scan AND source_ip:10.0.2.* AND risk:>50" />
+                    <button class="btn btn-start" onclick="applyInspectorFilter()">APPLY</button>
+                    <button class="btn btn-sm" onclick="clearInspectorFilter()">CLEAR</button>
+                    <label class="inspector-toggle">
+                        <input type="checkbox" id="inspectorPause"> PAUSE
+                    </label>
+                    <button class="btn btn-sm" onclick="exportInspectorCSV()">EXPORT CSV</button>
+                    <button class="btn btn-sm" onclick="exportInspectorJSON()">EXPORT JSON</button>
+                    <span class="filter-status" id="filterStatus"></span>
+                </div>
+
+                <div class="inspector-panes">
+                    <div class="inspector-list-pane">
+                        <div class="inspector-count" id="inspectorCount">0 events</div>
+                        <div class="inspector-list" id="inspectorList">
+                            <div class="no-data">Waiting for events...</div>
+                        </div>
+                    </div>
+                    <div class="inspector-bottom">
+                        <div class="inspector-detail-pane">
+                            <div class="pane-header">EVENT DETAIL</div>
+                            <div class="inspector-detail" id="inspectorDetail">
+                                <div class="no-data">Select an event from the list</div>
+                            </div>
+                        </div>
+                        <div class="inspector-trace-pane">
+                            <div class="pane-header">PIPELINE TRACE</div>
+                            <div class="inspector-trace" id="inspectorTrace">
+                                <div class="no-data">Select an event to see its pipeline trace</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="card-header">EVENT TYPES</div>
+                        <div class="stats-list" id="statsEventTypes"><div class="no-data">No data</div></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">TOP SOURCE IPs</div>
+                        <div class="stats-list" id="statsTopIPs"><div class="no-data">No data</div></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">RISK DISTRIBUTION</div>
+                        <div class="stats-list" id="statsRiskDist"><div class="no-data">No data</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN -->
+            <div class="tab-content" id="tabadmin" style="display:none">
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="card-header">INJECT CUSTOM EVENT</div>
+                        <div class="admin-form">
+                            <div class="form-row"><label>Event Type</label>
+                                <select id="adminEventType">
+                                    <option value="login">Login</option>
+                                    <option value="auth_failure">Auth Failure</option>
+                                    <option value="host_discovery">Host Discovery</option>
+                                    <option value="port_scan">Port Scan</option>
+                                    <option value="privilege_change">Privilege Change</option>
+                                    <option value="command_execution">Command Execution</option>
+                                    <option value="data_transfer">Data Transfer</option>
+                                    <option value="file_access">File Access</option>
+                                    <option value="config_change">Config Change</option>
+                                </select>
+                            </div>
+                            <div class="form-row"><label>User ID</label><input type="text" id="adminUser" value="admin_user"></div>
+                            <div class="form-row"><label>Source IP</label><input type="text" id="adminSrcIp" value="10.0.2.99"></div>
+                            <div class="form-row"><label>Destination IP</label><input type="text" id="adminDestIp" value="10.0.1.10"></div>
+                            <div class="form-row"><label>Severity</label>
+                                <select id="adminSeverity">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-admin" onclick="injectCustomEvent()">INJECT EVENT</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">ATTACK CHAIN SIMULATION</div>
+                        <div class="admin-form">
+                            <p class="admin-desc">Execute a realistic multi-stage attack pattern. Each event flows through the full ML pipeline: feature extraction, anomaly detection, temporal correlation, risk scoring, and explainability generation.</p>
+                            <div class="form-row"><label>Attack Pattern</label>
+                                <select id="adminChainType">
+                                    <option value="credential_theft">Credential Theft -> Lateral Movement</option>
+                                    <option value="data_breach">Data Breach -> Exfiltration</option>
+                                    <option value="insider_threat">Insider Threat Escalation</option>
+                                    <option value="apt_recon">APT Reconnaissance -> Exploit</option>
+                                    <option value="ransomware_prep">Ransomware Preparation</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-admin btn-danger" onclick="injectAttackChain()">EXECUTE ATTACK CHAIN</button>
+                            <div class="admin-info">The chain injects realistic telemetry events with configurable timing. Each event updates the anomaly detector, temporal sequence engine, and risk scorer in real-time.</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">ML MODEL MANAGEMENT</div>
+                        <div class="admin-form">
+                            <p class="admin-desc">Four trained models operate in the pipeline. Retrain with updated data at any time.</p>
+                            <button class="btn btn-admin" id="trainBtn" onclick="trainModels()">RETRAIN ALL MODELS</button>
+                            <div class="model-list" id="modelList">
+                                <div class="model-item"><div class="model-name" style="color:#666">Loading...</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-full">
+                    <div class="card-header">
+                        <span>DIAGNOSTIC LOG</span>
+                        <button class="btn btn-sm" onclick="clearDiagnostics()">CLEAR</button>
+                    </div>
+                    <div class="diagnostic-log" id="diagnosticLog">
+                        <div class="diag-line"><span class="diag-time">[system]</span> Admin panel initialized.</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="card-header">SYSTEM STATUS</div>
+                        <div class="sysinfo" id="sysInfo"><div class="sysrow"><span>Loading...</span></div></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">DATABASE</div>
+                        <div class="sysinfo" id="dbInfo"><div class="sysrow"><span>Loading...</span></div></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">PIPELINE COMPONENTS</div>
+                        <div class="sysinfo" id="pipelineInfo">
+                            <div class="sysrow"><span>Event Ingestion</span><span class="sysval ok">ACTIVE</span></div>
+                            <div class="sysrow"><span>Feature Extraction</span><span class="sysval ok">ACTIVE</span></div>
+                            <div class="sysrow"><span>Anomaly Detection</span><span class="sysval ok">ACTIVE</span></div>
+                            <div class="sysrow"><span>Temporal Analysis</span><span class="sysval ok">ACTIVE</span></div>
+                            <div class="sysrow"><span>Risk Engine</span><span class="sysval ok">ACTIVE</span></div>
+                            <div class="sysrow"><span>Explanation Engine</span><span class="sysval ok">ACTIVE</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-full">
+                    <div class="card-header">DATA MANAGEMENT</div>
+                    <div class="reset-row">
+                        <button class="btn btn-danger" onclick="resetAll()">RESET EVERYTHING</button>
+                        <button class="btn btn-sm" onclick="resetTable('events')">Clear Events</button>
+                        <button class="btn btn-sm" onclick="resetTable('predictions')">Clear Predictions</button>
+                        <button class="btn btn-sm" onclick="resetTable('risk_history')">Clear Risk History</button>
+                        <button class="btn btn-sm" onclick="resetTable('simulation_runs')">Clear Sim Runs</button>
+                        <button class="btn btn-sm" onclick="resetTable('model_metadata')">Clear Model Metadata</button>
+                    </div>
+                    <div class="admin-info">Reset Everything clears all database tables, removes trained model files, and resets in-memory state. Individual resets target specific tables only.</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+{
+  "app": {
+    "name": "PREVAIL - AI19",
+    "version": "1.0.0",
+    "host": "0.0.0.0",
+    "port": 8000,
+    "debug": true
+  },
+  "database": {
+    "path": "data/prevail.db"
+  },
+  "model": {
+    "anomaly": {
+      "type": "isolation_forest",
+      "contamination": 0.1,
+      "n_estimators": 100,
+      "max_samples": "auto",
+      "random_state": 42
+    },
+    "classifier": {
+      "type": "random_forest",
+      "n_estimators": 200,
+      "max_depth": 10,
+      "random_state": 42,
+      "use_xgboost": false
+    },
+    "sequence": {
+      "type": "temporal_correlation",
+      "window_size": 10,
+      "prediction_horizon_minutes": 30
+    }
+  },
+  "risk_engine": {
+    "weights": {
+      "anomaly_score": 0.25,
+      "attack_probability": 0.30,
+      "temporal_score": 0.25,
+      "behavioral_signals": 0.20
+    },
+    "thresholds": {
+      "low": 24,
+      "moderate": 49,
+      "high": 74,
+      "critical": 100
+    },
+    "risk_levels": {
+      "LOW": {"min": 0, "max": 24, "color": "#00ff88"},
+      "MODERATE": {"min": 25, "max": 49, "color": "#ffaa00"},
+      "HIGH": {"min": 50, "max": 74, "color": "#ff6600"},
+      "CRITICAL": {"min": 75, "max": 100, "color": "#ff0044"}
+    }
+  },
+  "feature_engine": {
+    "time_windows": [300, 900, 3600],
+    "features": [
+      "failed_logins_5m",
+      "failed_logins_15m",
+      "unique_destinations_5m",
+      "unique_ports_5m",
+      "bytes_sent_5m",
+      "bytes_received_5m",
+      "new_destination_count",
+      "new_port_count",
+      "privilege_change",
+      "unusual_login_time",
+      "resource_access_deviation",
+      "user_behavior_deviation",
+      "network_behavior_deviation"
+    ]
+  },
+  "simulation": {
+    "scenarios": {
+      "normal": "scenarios/normal.json",
+      "brute_force": "scenarios/brute_force.json",
+      "reconnaissance": "scenarios/reconnaissance.json",
+      "privilege_escalation": "scenarios/privilege_escalation.json",
+      "data_exfiltration": "scenarios/data_exfiltration.json",
+      "multi_stage_attack": "scenarios/multi_stage_attack.json"
+    },
+    "default_scenario": "multi_stage_attack",
+    "event_interval_seconds": 2
+  },
+  "dashboard": {
+    "poll_interval_ms": 1000,
+    "theme": "dark",
+    "accent_color": "#00d4ff"
+  }
+}

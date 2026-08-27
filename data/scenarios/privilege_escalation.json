@@ -1,0 +1,8 @@
+[
+  {"timestamp_offset": 0, "event_type": "login", "user_id": "user_17", "source_ip": "10.0.2.15", "destination_ip": "10.0.1.10", "login_success": true, "failed_login_count": 0, "privilege_level": "user", "bytes_sent": 1200, "bytes_received": 3400, "event_label": "user_login", "risk_contribution": 0},
+  {"timestamp_offset": 60, "event_type": "privilege_change", "user_id": "user_17", "source_ip": "10.0.2.15", "privilege_level": "admin", "event_label": "privilege_escalation_attempt", "risk_contribution": 25},
+  {"timestamp_offset": 120, "event_type": "command_execution", "user_id": "user_17", "source_ip": "10.0.2.15", "command": "sudo su", "privilege_level": "admin", "event_label": "sudo_su", "risk_contribution": 28},
+  {"timestamp_offset": 180, "event_type": "process_start", "user_id": "user_17", "process_name": "nmap", "privilege_level": "admin", "event_label": "nmap_as_admin", "risk_contribution": 30},
+  {"timestamp_offset": 240, "event_type": "file_access", "user_id": "user_17", "resource": "/etc/shadow", "privilege_level": "admin", "bytes_sent": 0, "bytes_received": 2048, "event_label": "shadow_file_access", "risk_contribution": 32},
+  {"timestamp_offset": 300, "event_type": "config_change", "user_id": "user_17", "resource": "/etc/ssh/sshd_config", "privilege_level": "admin", "event_label": "ssh_config_change", "risk_contribution": 35}
+]
